@@ -545,7 +545,10 @@ extension MXSegmentedControl {
             for (index, segment) in segments.enumerated() {
                 
                 var frame = CGRect.zero
-                frame.size.width = segment.width > 0 ? segment.width : max(segment.width, width / CGFloat(self.segments.count - index))
+                let segmentWidth = (segment.isSelected ?
+                    segment.attributedTitle(for: .selected)?.size().width :
+                    segment.attributedTitle(for: .normal)?.size().width) ?? 0
+                frame.size.width = segmentWidth > 0 ? segmentWidth : max(segment.width, width / CGFloat(self.segments.count - index))
                 frame.size.height = height
                 segment.layer.frame = frame
                 
