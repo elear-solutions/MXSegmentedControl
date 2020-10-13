@@ -441,6 +441,16 @@ extension MXSegmentedControl {
         segment.setAttributedTitle(attributedTitle, for: .normal)
         return segment
     }
+
+    /// Creates and append a new segment with the given title and text options.
+    ///
+    /// - Parameter title: The new segment title.
+    @discardableResult public func append(attributedTitle: NSAttributedString, selectedAttributedTitle: NSAttributedString) -> MXSegment {
+        let segment = newSegment()
+        segment.setAttributedTitle(attributedTitle, for: .normal)
+        segment.setAttributedTitle(selectedAttributedTitle, for: .selected)
+        return segment
+    }
     
     /// Creates and append a new segment with the given image.
     ///
@@ -545,10 +555,7 @@ extension MXSegmentedControl {
             for (index, segment) in segments.enumerated() {
                 
                 var frame = CGRect.zero
-                let segmentWidth = (segment.isSelected ?
-                    segment.attributedTitle(for: .selected)?.size().width :
-                    segment.attributedTitle(for: .normal)?.size().width) ?? 0
-                frame.size.width = segmentWidth > 0 ? segmentWidth : max(segment.width, width / CGFloat(self.segments.count - index))
+                frame.size.width = max(segment.width, width / CGFloat(self.segments.count - index))
                 frame.size.height = height
                 segment.layer.frame = frame
                 
