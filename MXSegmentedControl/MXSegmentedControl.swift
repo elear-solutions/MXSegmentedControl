@@ -34,6 +34,8 @@ import UIKit
 @IBDesignable
 @objcMembers
 open class MXSegmentedControl: UIControl {
+
+    fileprivate static let defaultSegmentWidth: CGFloat = 96
     
     // MARK: Customizing Appearance
     
@@ -280,7 +282,10 @@ open class MXSegmentedControl: UIControl {
             
             if let scrollView = scrollView, scrollView.isDragging || scrollView.isDecelerating {
                 progress = CGFloat(scrollView.contentOffset.x / scrollView.frame.size.width)
-                selectedIndex = Int(roundf( Float(progress) ))
+                let index = Int(roundf( Float(progress) ))
+                if index >= 0 && index < contentView.segments.count {
+                    selectedIndex = index
+                }
             }
             
         } else {
@@ -545,36 +550,38 @@ extension MXSegmentedControl {
         }
         
         override func layoutSubviews() {
-            super.layoutSubviews()
-            
-            let segments = self.segments.sorted(by: { $0.width > $1.width })
-            
-            let height = frame.size.height
-            var width = frame.size.width - CGFloat(separators.layers.count) * separators.inset.width
-            
-            for (index, segment) in segments.enumerated() {
-                
-                var frame = CGRect.zero
-                frame.size.width = 96 // segment.width // max(segment.width, width / CGFloat(self.segments.count - index))
-                frame.size.height = height
-                segment.layer.frame = frame
-                
-                width -= frame.size.width
-            }
-            
-            var separatorFrame = CGRect(x: 0, y: separators.inset.top, width: separators.inset.width, height: height - separators.inset.top - separators.inset.bottom)
-            for (index, segment) in self.segments.enumerated() {
-                
-                if index > 0 {
-                    separators.layers[index - 1].frame = separatorFrame
-                    separatorFrame.origin.x += separators.inset.width
-                }
-                
-                var frame = segment.frame
-                frame.origin.x = separatorFrame.origin.x
-                segment.frame = frame
-                separatorFrame.origin.x += frame.size.width
-            }
+          super.layoutSubviews()
+
+          let segments = self.segments.sorted(by: { $0.width > $1.width })
+
+          let height = frame.size.height
+          var width = frame.size.width - CGFloat(separators.layers.count) * separators.inset.width
+
+          for segment in segments {
+
+              var frame = CGRect.zero
+              let padding = segment.contentEdgeInsets.left + segment.contentEdgeInsets.right
+              let segmentWidth = (segment.attributedTitle(for: .selected)?.size().width ?? 0) + padding
+              frame.size.width = segmentWidth > padding ? segmentWidth : MXSegmentedControl.defaultSegmentWidth
+              frame.size.height = height
+              segment.layer.frame = frame
+
+              width -= frame.size.width
+          }
+
+          var separatorFrame = CGRect(x: 0, y: separators.inset.top, width: separators.inset.width, height: height - separators.inset.top - separators.inset.bottom)
+          for (index, segment) in self.segments.enumerated() {
+
+              if index > 0 {
+                  separators.layers[index - 1].frame = separatorFrame
+                  separatorFrame.origin.x += separators.inset.width
+              }
+
+              var frame = segment.frame
+              frame.origin.x = separatorFrame.origin.x
+              segment.frame = frame
+              separatorFrame.origin.x += frame.size.width
+          }
         }
         
     }
