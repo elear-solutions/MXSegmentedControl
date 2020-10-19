@@ -538,51 +538,51 @@ extension MXSegmentedControl {
             layoutIfNeeded()
         }
         
-        override var intrinsicContentSize: CGSize {
-            get {
-                var size = CGSize(width: CGFloat(separators.layers.count) * separators.inset.width, height: UIView.noIntrinsicMetric)
-                for segment in segments {
-                    size.width += segment.width
-                    size.height = max(segment.intrinsicContentSize.height, size.height)
-                }
-                return size
-            }
-        }
-        
-        override func layoutSubviews() {
-          super.layoutSubviews()
-
-          let segments = self.segments.sorted(by: { $0.width > $1.width })
-
-          let height = frame.size.height
-          var width = frame.size.width - CGFloat(separators.layers.count) * separators.inset.width
-
-          for segment in segments {
-
-              var frame = CGRect.zero
-              let padding = segment.contentEdgeInsets.left + segment.contentEdgeInsets.right
-              let segmentWidth = (segment.attributedTitle(for: .selected)?.size().width ?? 0) + padding
-              frame.size.width = segmentWidth > padding ? segmentWidth : MXSegmentedControl.defaultSegmentWidth
-              frame.size.height = height
-              segment.layer.frame = frame
-
-              width -= frame.size.width
-          }
-
-          var separatorFrame = CGRect(x: 0, y: separators.inset.top, width: separators.inset.width, height: height - separators.inset.top - separators.inset.bottom)
-          for (index, segment) in self.segments.enumerated() {
-
-              if index > 0 {
-                  separators.layers[index - 1].frame = separatorFrame
-                  separatorFrame.origin.x += separators.inset.width
+      override var intrinsicContentSize: CGSize {
+          get {
+              var size = CGSize(width: CGFloat(separators.layers.count) * separators.inset.width, height: UIView.noIntrinsicMetric)
+              for segment in segments {
+                let padding = segment.contentEdgeInsets.left + segment.contentEdgeInsets.right
+                let segmentWidth = (segment.attributedTitle(for: .selected)?.size().width ?? 0) + padding
+                size.width += segmentWidth > padding ? segmentWidth : MXSegmentedControl.defaultSegmentWidth
+                size.height = max(segment.intrinsicContentSize.height, size.height)
               }
-
-              var frame = segment.frame
-              frame.origin.x = separatorFrame.origin.x
-              segment.frame = frame
-              separatorFrame.origin.x += frame.size.width
+              return size
           }
+      }
+
+      override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let segments = self.segments.sorted(by: { $0.width > $1.width })
+
+        let height = frame.size.height
+
+        for segment in segments {
+
+            var frame = CGRect.zero
+            let padding = segment.contentEdgeInsets.left + segment.contentEdgeInsets.right
+            let segmentWidth = (segment.attributedTitle(for: .selected)?.size().width ?? 0) + padding
+            frame.size.width = segmentWidth > padding ? segmentWidth : MXSegmentedControl.defaultSegmentWidth
+            frame.size.height = height
+            segment.layer.frame = frame
         }
+
+        var separatorFrame = CGRect(x: 0, y: separators.inset.top, width: separators.inset.width, height: height - separators.inset.top - separators.inset.bottom)
+        for (index, segment) in self.segments.enumerated() {
+
+            if index > 0 {
+                separators.layers[index - 1].frame = separatorFrame
+                separatorFrame.origin.x += separators.inset.width
+            }
+
+            var frame = segment.frame
+            frame.origin.x = separatorFrame.origin.x
+            segment.frame = frame
+            separatorFrame.origin.x += frame.size.width
+        }
+      }
+
         
     }
     
