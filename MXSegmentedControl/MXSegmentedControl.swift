@@ -36,6 +36,7 @@ import UIKit
 open class MXSegmentedControl: UIControl {
 
     fileprivate static let defaultSegmentWidth: CGFloat = 96
+  fileprivate static let xPadding: CGFloat = 16
     
     // MARK: Customizing Appearance
     
@@ -547,6 +548,7 @@ extension MXSegmentedControl {
                 size.width += segmentWidth > padding ? segmentWidth : MXSegmentedControl.defaultSegmentWidth
                 size.height = max(segment.intrinsicContentSize.height, size.height)
               }
+              size.width += MXSegmentedControl.xPadding
               return size
           }
       }
