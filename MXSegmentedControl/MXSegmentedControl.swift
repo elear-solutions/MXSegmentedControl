@@ -121,7 +121,10 @@ open class MXSegmentedControl: UIControl {
     
     /// The currently selected segment index.
     @objc dynamic public private(set) var selectedIndex: Int = 0 {
-        willSet { contentView.segments[selectedIndex].isSelected = false }
+        willSet {
+          if selectedIndex < 0 || selectedIndex >= contentView.segments.count { return }
+          contentView.segments[selectedIndex].isSelected = false
+        }
         didSet {
             sendActions(for: .valueChanged)
             contentView.segments[selectedIndex].isSelected = true
